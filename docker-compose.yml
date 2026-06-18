@@ -1,0 +1,93 @@
+services:
+  aggregator:
+    build: ./aggregator
+    image: uas-sister-aggregator:latest
+    depends_on:
+      broker:
+        condition: service_healthy
+      storage:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://user:pass@storage:5432/logdb
+      REDIS_URL: redis://broker:6379/0
+      REDIS_STREAM: log-events
+      REDIS_GROUP: aggregator-workers
+      WORKER_COUNT: 6
+      WORKER_BATCH_SIZE: 200
+      STALE_MESSAGE_MS: 60000
+    ports:
+      - "8080:8080"
+    networks:
+      - edge
+      - backend
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/readyz', timeout=2)",
+        ]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 20s
+
+  publisher:
+    build: ./publisher
+    image: uas-sister-publisher:latest
+    profiles:
+      - load
+    depends_on:
+      aggregator:
+        condition: service_healthy
+    environment:
+      TARGET_URL: http://aggregator:8080/publish
+      TOTAL_EVENTS: 20000
+      DUPLICATE_RATE: 0.30
+      BATCH_SIZE: 500
+      CONCURRENCY: 4
+      SOURCE: publisher-compose
+    networks:
+      - backend
+
+  broker:
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    ports: []
+    volumes:
+      - broker_data:/data
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  storage:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: logdb
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+    ports: []
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d logdb"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+volumes:
+  pg_data:
+  broker_data:
+
+networks:
+  edge:
+  backend:
+    internal: true

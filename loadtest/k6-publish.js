@@ -18,9 +18,9 @@ export const options = {
   scenarios: {
     publish_load: {
       executor: "constant-arrival-rate",
-      rate: Number(__ENV.K6_RATE || "20"),
+      rate: Number(__ENV.K6_RATE || "4"),
       timeUnit: "1s",
-      duration: __ENV.K6_DURATION || "2m",
+      duration: __ENV.K6_DURATION || "1m",
       preAllocatedVUs: Number(__ENV.K6_PRE_ALLOCATED_VUS || "20"),
       maxVUs: Number(__ENV.K6_MAX_VUS || "100"),
     },

@@ -63,8 +63,8 @@ services:
       TARGET_URL: http://aggregator:8080/publish
       BATCH_SIZE: 100
       DUPLICATE_RATE: 0.30
-      K6_RATE: 20
-      K6_DURATION: 2m
+      K6_RATE: 4
+      K6_DURATION: 1m
       SOURCE: k6-compose
     volumes:
       - ./loadtest:/scripts:ro

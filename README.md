@@ -19,8 +19,15 @@ Komponen:
 - `publisher`: simulator yang mengirim event batch, termasuk duplikasi.
 - `broker`: Redis Streams internal untuk at-least-once delivery.
 - `storage`: PostgreSQL 16 dengan named volume `pg_data`.
+- `k6`: load testing HTTP opsional melalui Compose profile `k6`.
 
 Redis dan PostgreSQL tidak membuka port host. Hanya aggregator yang diekspos di `http://localhost:8080`.
+
+## Submission
+
+- Repository: https://github.com/azpradipta/uas-sister
+- Laporan: [report.md](./report.md)
+- Link video demo: [isi link YouTube unlisted/public]
 
 ## Fitur Utama
 
@@ -157,7 +164,7 @@ python -m pytest -q
 Verifikasi terakhir di mesin ini:
 
 ```text
-20 passed in 20.50s
+20 passed in 12.69s
 ```
 
 Test memakai SQLite sementara agar bisa jalan cepat tanpa Docker, tetapi pola dedup-nya sama: transaksi + unique constraint + idempotent insert. Saat Compose berjalan, storage yang dipakai adalah PostgreSQL.
@@ -172,8 +179,6 @@ Test memakai SQLite sementara agar bisa jalan cepat tanpa Docker, tetapi pola de
 - `loadtest/k6-publish.js`: script K6 opsional untuk HTTP load test.
 - `tests/`: 20 test untuk validasi skema, dedup, persistence, concurrency, stats, dan API.
 - `report.md`: draft laporan UAS.
-- `DEMO_GUIDE.md`: urutan narasi video minimal 25 menit.
-- `DEMO_SCRIPT_FULL.md`: skrip bacaan dan command demo yang bisa dicopy.
 
 ## Membersihkan Container
 

@@ -24,6 +24,7 @@ Komponen Compose:
 - `publisher`: generator event dengan duplikasi dan mode deterministic `SEED`.
 - `broker`: Redis Streams sebagai broker internal.
 - `storage`: PostgreSQL 16 sebagai dedup store persisten.
+- `k6`: load testing HTTP opsional melalui Compose profile `k6`.
 
 Alur data:
 
@@ -60,7 +61,7 @@ Ordering tidak memakai total ordering global. Sistem menampilkan event berdasark
 Unit/integration test lokal:
 
 ```text
-20 passed in 20.50s
+20 passed in 12.69s
 ```
 
 Cakupan test:

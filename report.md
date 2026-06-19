@@ -2,9 +2,9 @@
 
 Judul: Pub-Sub Log Aggregator Terdistribusi dengan Idempotent Consumer, Deduplication, dan Transaksi/Kontrol Konkurensi
 
-Nama: [Isi nama]
+Nama: Arya Zaky Pradipta
 
-NIM: [Isi NIM]
+NIM: 11231013
 
 Repository GitHub: https://github.com/azpradipta/uas-sister
 

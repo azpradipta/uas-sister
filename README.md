@@ -79,6 +79,25 @@ Jalankan publisher default untuk 20.000 event dengan sekitar 30 persen duplikasi
 docker compose --profile load run --rm publisher
 ```
 
+Opsional, jalankan HTTP load test dengan K6:
+
+```powershell
+docker compose --profile k6 run --rm k6
+```
+
+K6 memakai script [loadtest/k6-publish.js](./loadtest/k6-publish.js), mengirim batch event ke `POST /publish`, dan tetap memakai duplicate rate 30 persen. Service K6 berjalan di jaringan Compose dan menargetkan `http://aggregator:8080/publish`.
+
+Contoh override beban K6:
+
+```powershell
+docker compose --profile k6 run --rm `
+  -e K6_RATE=50 `
+  -e K6_DURATION=3m `
+  -e BATCH_SIZE=100 `
+  -e DUPLICATE_RATE=0.30 `
+  k6
+```
+
 Pantau hasil:
 
 ```powershell
@@ -150,6 +169,7 @@ Test memakai SQLite sementara agar bisa jalan cepat tanpa Docker, tetapi pola de
 - `aggregator/app/queue.py`: Redis Streams publish/read/ack/claim.
 - `aggregator/app/consumer.py`: multi-worker consumer.
 - `publisher/publisher.py`: generator event duplikat dan load sender.
+- `loadtest/k6-publish.js`: script K6 opsional untuk HTTP load test.
 - `tests/`: 20 test untuk validasi skema, dedup, persistence, concurrency, stats, dan API.
 - `report.md`: draft laporan UAS.
 - `DEMO_GUIDE.md`: urutan narasi video minimal 25 menit.

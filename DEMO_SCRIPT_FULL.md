@@ -529,6 +529,33 @@ Bacakan tambahan:
 
 > Observability penting karena distributed system sulit dianalisis hanya dari satu output. Stats memberi angka agregat, audit memberi jejak per event, dan logs memberi informasi aktivitas worker. Ketiganya membantu memastikan sistem tidak hanya berjalan, tetapi juga bisa diamati.
 
+Opsional, jalankan K6 sebagai HTTP load test tambahan:
+
+```powershell
+docker compose --profile k6 run --rm k6
+```
+
+Bacakan:
+
+> Selain publisher Python, saya juga menyediakan K6 untuk HTTP load testing. K6 menembak endpoint `POST /publish` dengan batch event dan duplicate rate 30 persen. Publisher Python saya gunakan sebagai simulator domain event, sedangkan K6 saya gunakan sebagai alat load testing HTTP yang umum dipakai untuk melihat request rate, latency, dan error rate.
+
+> Service K6 berjalan di Compose profile `k6`, jadi tetap berada di jaringan lokal Compose dan menargetkan `http://aggregator:8080/publish`. Ini tetap sesuai ketentuan bahwa sistem tidak memakai layanan eksternal publik saat runtime.
+
+Jika ingin mengatur beban K6:
+
+```powershell
+docker compose --profile k6 run --rm `
+  -e K6_RATE=50 `
+  -e K6_DURATION=3m `
+  -e BATCH_SIZE=100 `
+  -e DUPLICATE_RATE=0.30 `
+  k6
+```
+
+Bacakan tambahan:
+
+> Parameter `K6_RATE` mengatur jumlah iterasi per detik, `K6_DURATION` mengatur durasi test, dan `BATCH_SIZE` mengatur jumlah event per request. Karena setiap request membawa batch, total event kira-kira adalah rate dikali durasi dikali batch size. Setelah K6 selesai, saya tetap membaca hasil konsistensi dari endpoint `/stats` dan `/events`.
+
 ## 26:00 - 30:00 Persistence Setelah Container Recreate
 
 Bacakan:

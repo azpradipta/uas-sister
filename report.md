@@ -86,6 +86,14 @@ Konfigurasi default publisher mengirim 20.000 event dengan duplicate rate 0,30. 
 
 Catatan interpretasi metrik: `received` adalah jumlah processing attempt di worker. Karena sistem memakai at-least-once delivery, redelivery dapat membuat `received` dan `duplicate_dropped` sedikit lebih tinggi dari jumlah event yang dikirim. Kebenaran dedup utama dibuktikan oleh `unique_processed` dan data unik pada `/events`.
 
+Load test opsional dengan K6:
+
+```powershell
+docker compose --profile k6 run --rm k6
+```
+
+K6 digunakan untuk menguji endpoint HTTP `POST /publish` dengan arrival rate, durasi, batch size, dan duplicate rate yang dapat dikonfigurasi. Publisher Python tetap dipakai sebagai simulator event, sedangkan K6 dipakai untuk memperoleh metrik HTTP seperti latency, request rate, dan error rate.
+
 ## T1 - Karakteristik Sistem Terdistribusi dan Trade-off Pub-Sub Aggregator
 
 Sistem ini termasuk sistem terdistribusi karena terdiri dari beberapa komponen independen yang berjalan sebagai proses/container berbeda, berkomunikasi melalui jaringan lokal Compose, dan harus tampak sebagai satu layanan log aggregator. Karakteristik pentingnya adalah concurrency, partial failure, heterogeneity, dan kebutuhan koordinasi antar komponen. Publisher, broker, aggregator worker, dan storage dapat berjalan atau gagal secara terpisah. Ini sesuai dengan konsep sistem terdistribusi sebagai kumpulan komputer otonom yang berkoordinasi melalui message passing (Coulouris et al., 2012).

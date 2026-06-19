@@ -103,6 +103,18 @@ Narasi:
 - Worker count default 6, sehingga beberapa worker memproses stream secara paralel.
 - Race condition dicegah oleh transaksi database dan unique constraint.
 
+Opsional K6:
+
+```powershell
+docker compose --profile k6 run --rm k6
+```
+
+Narasi:
+
+- K6 disediakan sebagai HTTP load testing tambahan.
+- K6 menembak `POST /publish` dari jaringan Compose.
+- Publisher Python tetap dipakai sebagai simulator domain event, sedangkan K6 dipakai untuk menunjukkan rate, latency, dan error rate HTTP.
+
 ## 17:00 - 21:00 Crash/Recreate dan Persistence
 
 Run deterministic pertama:

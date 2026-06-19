@@ -52,6 +52,26 @@ services:
     networks:
       - backend
 
+  k6:
+    image: grafana/k6:latest
+    profiles:
+      - k6
+    depends_on:
+      aggregator:
+        condition: service_healthy
+    environment:
+      TARGET_URL: http://aggregator:8080/publish
+      BATCH_SIZE: 100
+      DUPLICATE_RATE: 0.30
+      K6_RATE: 20
+      K6_DURATION: 2m
+      SOURCE: k6-compose
+    volumes:
+      - ./loadtest:/scripts:ro
+    command: ["run", "/scripts/k6-publish.js"]
+    networks:
+      - backend
+
   broker:
     image: redis:7-alpine
     command: ["redis-server", "--appendonly", "yes"]
